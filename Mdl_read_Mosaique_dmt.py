@@ -45,11 +45,8 @@ from pathlib import Path as fexiste
 import os, sys
 #from __future__ import unicode_literals # pour l'encodage uniform
 
-#path = 'D:/Mes/071109_140319/'
-#fichier = '071109_140319.dat'
-
-path = 'E:/LUU_FTIR/test/LUU71212_p6/'
-fichier = 'LUU71212_p6.dat'
+# path = 'E:/LUU_FTIR/test/LUU00001'
+# fichier = 'LUU00001.dat'
 
 class mcla_AgilentFTIR:
     # attribut
@@ -86,13 +83,8 @@ class mcla_AgilentFTIR:
                 print('step:',wavenumberstep)
         except FileNotFoundError:
             sys.exit('File ' + str(dmtfilename)+' does not exist')
-        #wavenumbers = np.linspace(startwavelength,numberofpoints+startwavelength,np.int32(numberofpoints))
-        #wavenumbers = wavenumbers * wavenumberstep
-        #self.wavenumbers = wavenumbers[0]
         wavenumbers = np.linspace(startwavelength[0,0],numberofpoints[0,0]+startwavelength[0,0],np.int32(numberofpoints[0,0]))
         self.wavenumbers = wavenumbers * wavenumberstep[0,0] 
-        #wavenumbers = np.linspace(0,numberofpoints[0,0]-1,np.int32(numberofpoints[0,0]))
-        #self.wavenumbers = (wavenumbers * wavenumberstep[0,0]) + startwavelength[0,0]
     def __get_CalculTileNumber(self):
         basefilename = self.path + self.name # POUR TILE
         # Test there is .dmd file
@@ -252,11 +244,8 @@ class mcla_AgilentFTIR:
                 nelements = 1
                 wavenumberstep = np.fromfile(fid, dt, nelements) 
                 wavenumberstep.shape = (nelements, 1)
-            
             wavenumbers = np.linspace(startwavenumber[0,0],numberofpoints[0,0]+startwavenumber[0,0],np.int32(numberofpoints[0,0]))
             self.wavenumbers = wavenumbers * wavenumberstep[0,0] 
-            #wavenumbers = np.linspace(0,numberofpoints[0,0]-1,np.int32(numberofpoints[0,0]))
-            #self.wavenumbers = (wavenumbers * wavenumberstep[0,0]) + startwavenumber[0,0]
         else :
             print ('Error: the file doesn''t existe')
     def __get_LoadDataCubeSingle(self):        
@@ -274,8 +263,7 @@ class mcla_AgilentFTIR:
                 status = fid.seek(255*4, 0)
                 tempdata = np.fromfile(fid, dtype='<f4')    
         else :
-            print ('Error: the file doesn''t existe')
-        
+            print ('Error: the file doesn''t existe')    
         # number of pixels per tiles in X and Y
         fileAttribue = os.stat(datfile) # (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime)
         le_bytes = np.double(fileAttribue[6]) # file size en octet
@@ -283,7 +271,6 @@ class mcla_AgilentFTIR:
         le_bytes = le_bytes -255
         le_bytes = le_bytes /len(self.wavenumbers)
         pixelNumber = int( np.sqrt(le_bytes))
-        
         #pixelNumber = 128
         tempdata = tempdata.reshape(-1,pixelNumber,pixelNumber)
         tempdata = np.swapaxes(tempdata,0,2)
@@ -294,361 +281,3 @@ class mcla_AgilentFTIR:
         self.__get_Wavenumbers()
         self.__get_LoadDataCubeSingle()
         
-#        
-#FTIRdata = mcla_AgilentFTIR(path,fichier) # Object creation 
-#print(FTIRdata.name)
-#
-##FTIRdata.__get_Wavenumbers() # this is private so do not work this way
-## but work this way FTIRdata._mcla_AgilentFTIR__get_Wavenumbers()
-##Wavenumber = FTIRdata.wavenumbers
-##FTIRdata.get_CalculTileNumber()
-##Tilex = FTIRdata.tiles_in_x
-#FTIRdata.get_DataCubeMosaique()
-#datacube = FTIRdata.data
-##*
-#plt.figure()
-#plt.imshow(datacube[:,:,945])
-#plt.title('Amide I with .dmd of mosaïque')
-#plt.grid()
-#plt.colorbar()
-##*
-#wave1 = FTIRdata.wavenumbers
-#
-#FTIRdata1 = mcla_AgilentFTIR(path,fichier) # Object creation 
-#print(FTIRdata.name)
-#FTIRdata1.get_DataCubeSingle()
-#datacube1 = FTIRdata1.data
-#
-##*
-#plt.figure()
-#plt.imshow(datacube1[:,:,945])
-#plt.title('Amide I with .dat of mosaique')
-#plt.grid()
-#plt.colorbar()
-##*
-#wave2 = FTIRdata1.wavenumbers
-#
-## Seond objet
-#path = 'E:/LUU_FTIR/test/LUU020429_highR/'
-#fichier = '020429_hm_1.dat'   
-#FTIRdataSimple = mcla_AgilentFTIR(path,fichier) # Object creation 
-#print(FTIRdataSimple.name)
-#FTIRdataSimple.get_DataCubeSingle()
-#datacubeSimple = FTIRdataSimple.data
-##*
-#plt.figure()
-#plt.imshow(datacubeSimple[:,:,945])
-#plt.title('Amide I Simple with .dat')
-#plt.grid()
-##*
-#
-####*********** Test PMMA ***********
-#path = 'E:/LUU_FTIR/LUU2_07_2020/PMMA2/'
-##fichier = 'pmma2.dmt'
-#fichier = 'PMMA2.dat'
-#
-#path = 'E:/LUU_FTIR/test/LUU71212_p6/'
-#fichier = 'LUU71212_p6.dms'   
-#filename = path+fichier
-#pathstr,nameExt = os.path.split(filename)
-#name = os.path.splitext(nameExt)[0]
-##name = name.lower() # Put the file name in small letters
-#dmdfile = path + name + '.dms'
-#
-#my_file = fexiste(dmdfile)
-#if my_file.is_file():
-#    with open(dmdfile, "r", encoding="Latin-1") as fid: 
-#        status = fid.seek(255*4, 0)
-#        tempdata1 = np.fromfile(fid, dtype='<f4')    
-#else :
-#    print ('Error: the file doesn''t existe')
-#
-#bband = tempdata1[51855595:]
-### number of pixels per tiles in X and Y
-##fileAttribue = os.stat(datfile) # (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime)
-##le_bytes = np.double(fileAttribue[6]) # file size en octet
-##le_bytes = le_bytes/4
-##le_bytes = le_bytes -255
-##le_bytes = le_bytes /len(self.wavenumbers)
-##pixelNumber = int( np.sqrt(le_bytes))
-#
-#pixelNumber = 128
-#tempdata1 = tempdata1.reshape(-1,pixelNumber,pixelNumber)
-#tempdata1 = np.swapaxes(tempdata1,0,2)
-#tempdata1 = np.swapaxes(tempdata1,1,0)
-#tempdata1 = np.flip(tempdata1,0) #128 128 1558
-##*    
-#plt.figure() 
-#plt.imshow(tempdata1[:,:,940],cmap='jet')
-#plt.grid
-#plt.title('PMMA mosaique')
-#plt.colorbar()
-##*
-#
-#spectrum = tempdata1[50,50,:]
-#plt.figure()
-#plt.plot(spectrum)
-#plt.grid()
-#
-##------------- Autre PMMA -----------------
-#path = 'E:/LUU_FTIR/LUU2_07_2020/PMMA/'
-#fichier = 'PMMA.dat'
-#   
-#filename = path+fichier
-#pathstr,nameExt = os.path.split(filename)
-#name = os.path.splitext(nameExt)[0]
-##name = name.lower() # Put the file name in small letters
-#datfile = path + name + '.dat'
-#
-#my_file = fexiste(datfile)
-#if my_file.is_file():
-#    with open(datfile, "r", encoding="Latin-1") as fid: 
-#        status = fid.seek(255*4, 0)
-#        tempdata = np.fromfile(fid, dtype='<f4')    
-#else :
-#    print ('Error: the file doesn''t existe')
-#
-### number of pixels per tiles in X and Y
-##fileAttribue = os.stat(datfile) # (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime)
-##le_bytes = np.double(fileAttribue[6]) # file size en octet
-##le_bytes = le_bytes/4
-##le_bytes = le_bytes -255
-##le_bytes = le_bytes /len(self.wavenumbers)
-##pixelNumber = int( np.sqrt(le_bytes))
-#
-#pixelNumber = 128
-#tempdata = tempdata.reshape(-1,pixelNumber,pixelNumber)
-#tempdata= np.swapaxes(tempdata,0,2)
-#tempdata = np.swapaxes(tempdata,1,0)
-#tempdata= np.flip(tempdata,0) #128 128 1558
-##*    
-#plt.figure() 
-#plt.imshow(tempdata[:,:,940],cmap='jet')
-#plt.grid
-#plt.title('PMMA simple')
-#plt.colorbar()
-##*
-#
-#
-#mmosaique = np.median(tempdata1, axis=0)
-#mmosaique = np.median(mmosaique, axis=0)
-#
-#msingle = np.median(tempdata, axis=0)
-#msingle = np.median(msingle, axis=0)
-#
-#from scipy import ndimage # Pour median filter
-#modes = 'nearest'
-#tempdata1 = ndimage.median_filter(tempdata1, mode=modes, size=(3, 3,1))
-#tempdata = ndimage.median_filter(tempdata, mode=modes, size=(3, 3,1))
-#
-#mmosaique = np.mean(tempdata1, axis=0)
-#mmosaique = np.mean(mmosaique, axis=0)
-#
-#msingle = np.mean(tempdata, axis=0)
-#msingle = np.mean(msingle, axis=0)
-#
-#
-#plt.figure()
-#plt.plot(mmosaique)
-#plt.plot(msingle,'--')
-#plt.grid()
-#plt.legend(['.dmd','.dat'])
-#
-#erreur = mmosaique-msingle
-#plt.figure()
-#plt.plot(erreur)
-#plt.grid()
-#plt.legend(['error =dmd-dat'])
-#
-#erreur = mmosaique/msingle
-#plt.figure()
-#plt.plot(1/erreur)
-#plt.grid()
-#plt.legend(['error =dmd/dat'])
-#
-##*    
-#plt.figure() 
-#plt.imshow(tempdata1[:,:,940],cmap='jet')
-#plt.grid
-#plt.title('PMMA mosaique')
-#plt.colorbar()
-##*
-#
-##*    
-#plt.figure() 
-#plt.imshow(tempdata[:,:,940],cmap='jet')
-#plt.grid
-#plt.title('PMMA simple')
-#plt.colorbar()
-##*
-#
-##from statistics import median
-##
-##d = median(tempdata,axis=2)
-##
-### AUTRE Data SIGNLE 
-##datfile = path + name + '.seq'
-##my_file = fexiste(datfile)
-##if my_file.is_file():
-##    with open(datfile, "r", encoding="Latin-1") as fid: 
-##        status = fid.seek(255*4, 0)
-##        tempdata = np.fromfile(fid, dtype='<f4')    
-##else :
-##    print ('Error: the file doesn''t existe')
-##
-#### number of pixels per tiles in X and Y
-###fileAttribue = os.stat(datfile) # (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime)
-###le_bytes = np.double(fileAttribue[6]) # file size en octet
-###le_bytes = le_bytes/4
-###le_bytes = le_bytes -255
-###le_bytes = le_bytes /len(self.wavenumbers)
-###pixelNumber = int( np.sqrt(le_bytes))
-##pixelNumber = 128
-##tempdata = tempdata.reshape(-1,pixelNumber,pixelNumber)
-##tempdata= np.swapaxes(tempdata,0,2)
-##tempdata = np.swapaxes(tempdata,1,0)
-##tempdata= np.flip(tempdata,0) # 128x128x2058
-###*    
-##plt.figure() 
-###plt.imshow(tempdata[:,:,485])
-###plt.imshow(tempdata[:,:,2057])
-##plt.imshow(tempdata[:,:,0])
-##plt.grid()
-###*
-##spectrum = tempdata[50,50,:]
-##plt.figure()
-##plt.plot(spectrum)
-##plt.grid()
-#
-## 33 71 85 26
-## 33 71 85 27
-## 33 71 84 63
-## 31 71 94 24
-#
-## 33 71 85 27
-## 33 71 82 72
-##
-### 33718527- 33718272 = 255
-### 33718272/(128*128) = 2058
-### 33718527/(128*128) = 2058.0156
-##
-###bband = tempdata[33718508:]
-##
-##
-### the wavenumbers for non mosaique data
-##bspfile = path + name + '.bsp'
-##my_file = fexiste(bspfile)
-##if my_file.is_file():
-##    with open(bspfile, "r", encoding="Latin-1") as fid: 
-##        status = fid.seek(2228, 0)
-##        dt = '<i4'
-##        nelements = 1
-##        startwavenumber = np.fromfile(fid, dt, nelements)
-##        startwavenumber.shape = (nelements, 1)
-##        status = fid.seek(2236, 0)
-##        dt = np.int32
-##        nelements = 1
-##        numberofpoints = np.fromfile(fid, dt, nelements) 
-##        numberofpoints.shape = (nelements, 1)
-##        status = fid.seek(2216, 0)
-##        dt = np.double
-##        nelements = 1
-##        wavenumberstep = np.fromfile(fid, dt, nelements) 
-##        wavenumberstep.shape = (nelements, 1)
-##    
-##    wavenumbers = np.linspace(startwavenumber[0,0],numberofpoints[0,0]+startwavenumber[0,0],np.int32(numberofpoints[0,0]))
-##    wavenumbers = wavenumbers * wavenumberstep[0,0]     
-##else :
-##    print ('Error: the file doesn''t existe')
-##
-##bspfile = path + name +'_0000_0000.dmd'#'.dat'
-##my_file = fexiste(bspfile)
-##if my_file.is_file():
-##    with open(bspfile, "r", encoding="Latin-1") as fid: 
-##        status = fid.seek(255*4, 0)
-##        dt = '<i4'
-##        nelements = 16384
-##        startwavenumber1 = np.fromfile(fid, dt)
-##else :
-##    print ('Error: the file doesn''t existe')
-##
-##pixelNumber = 128
-##startwavenumber1 = startwavenumber1.reshape(-1,pixelNumber,pixelNumber)
-##startwavenumber1 = np.swapaxes(startwavenumber1,0,2)
-##startwavenumber1 = np.swapaxes(startwavenumber1,1,0)
-##startwavenumber1 = np.flip(startwavenumber1,0) # 128x128x2058
-###*    
-##plt.figure() 
-###plt.imshow(tempdata[:,:,485])
-###plt.imshow(tempdata[:,:,2057])
-###plt.imshow(startwavenumber1[:,:,940]) 
-##plt.imshow(startwavenumber1[:,:,940]) 
-##plt.grid()
-##plt.colorbar()
-###*
-##spectrum = startwavenumber1[50,50,:]
-##plt.figure()
-##plt.plot(spectrum)
-##plt.grid()
-##
-#
-#
-##startwavelength = np.fromfile(fid, dt, nelements) 51855360
-##
-##dt = np.double
-##nelements = 1
-##wavenumberstep = np.fromfile(fid, dt, nelements) 25526272
-#
-##
-### Extract the wavenumbers and date from the .dmt file
-##pathstr, nameExt = os.path.split(filename)
-##pathname, ext = os.path.splitext(filename)
-##name = os.path.splitext(nameExt)[0]
-##
-##name = name.lower() # mettre le nom du fichier en minuscule
-##
-##dmtfilename = os.path.join(pathstr,name+'.dmt') # mettre le path au fichier .dmt
-##dmtfilename = pathstr+'/'+ name+'.dmt'  # ???????????????
-##
-###with open(dmtfilename, "r", encoding="Latin-1") as fid: #
-##with open(dmtfilename, "r", encoding="Latin-1") as fid: #
-##    status = fid.seek(2228, 0)
-##    dt = np.int32
-##    nelements = 1
-##    startwavelength = np.fromfile(fid, dt, nelements)
-##    startwavelength.shape = (nelements, 1)
-##    startwavelength = np.double(startwavelength)
-##    
-##    status = fid.seek(2236, 0)
-##    nelements = 1
-##    numberofpoints = np.fromfile(fid, dt, nelements)
-##    numberofpoints.shape = (nelements, 1)
-##    numberofpoints = np.double(numberofpoints)
-##    
-##    
-##    status = fid.seek(2216, 0)
-##    dt = np.double
-##    nelements = 1
-##    wavenumberstep = np.fromfile(fid, dt, nelements)
-##    wavenumberstep.shape = (nelements, 1)
-#    
-##    wavenumbers = np.linspace(1,numberofpoints+startwavelength,numberofpoints+startwavelength)
-##    wavenumbers = wavenumbers * wavenumberstep
-###    D = wavenumbers[0][int(startwavelength)-1]
-##    wavenumbers = wavenumbers[0][int(startwavelength)-1:-1]
-##    wave = np.linspace(startwavelength,numberofpoints+startwavelength,np.int32(numberofpoints))
-##    wave = wave * wavenumberstep
-##    wave = wave[0]
-###    
-###    # date
-###    status = fid.seek(0, 0)
-###    dt = dtype='<f4'
-###    dt = np.dtype('b') 
-###    dt = np.dtype('c') 
-####    dt = npstring
-###    nelements = 1
-####    D = fid.readline()
-####    text = fid.read().strip()
-###    D = np.fromfile(fid, dtype=dt, sep='')
-####    A= fid.readline();
-####    data_array = fread(fid, [2, inf], 'int16');
